@@ -39,6 +39,6 @@ the compiler.  Use the ENABLE_EXAMPLES:BOOL=ON option to cmake to build the
 example program (default is OFF).
 
 To link you need version 2.0 of the yajl library.  Source for the library is
-hosted at http://lloyd.gitbug.io/yajl.  It is also available as a standard
+hosted at http://lloyd.github.io/yajl.  It is also available as a standard
 system package in many Linux distributions; the "yajl" package in Fedora, for
 example.
