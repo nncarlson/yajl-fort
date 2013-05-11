@@ -1,0 +1,44 @@
+YAJL-Fort
+
+YAJL (Yet Another JSON Library) is an event-driven parser for JSON (JavaScript
+Object Notation) format data streams.  The YAJL-Fort package provides a modern
+Fortran interface to the YAJL library.  Notwithstanding its name, the JSON text
+format is language independent and an excellent data interchange format.  It is
+light-weight, flexible, easy for humans to read and write, all of which make it
+a superior format to XML for expressing input files, for example.
+
+The source consists of a single file yajl_fort.F90 which implements the
+interface, plus two small files (f90_assert.F90 and f90_assert.fpp) that
+implement a simple DBC (design-by-contract) system, that can be easily
+incorporated into a larger software project.  The DBC can be easily stripped
+or disabled from the code, if desired.  Alternatively, code can be compiled
+into a library using the cmake-based build system
+
+The YAJL-Fort package is hosted on SourceForge: http://yajl-fort.sf.net
+
+Compiling
+--------
+
+The code is written in modern Fortran (read 2008) and requires a compiler
+that has a fairly complete implementation of the standard, which many do not.
+At this time the following compilers are known to work:
+
+  NAG versions >= 5.3
+  Intel versions >= 13.0
+
+The following compilers are known NOT to work:
+
+  Intel versions < 13.0
+  gfortran <= 4.7.2
+
+Reports of working/non-working compilers are appreciated.
+
+Cmake (>=2.8) is used to build the code and examples.  To ensure it uses the
+Fortran compiler you intend, set your environment variable FC to the path to
+the compiler.  Use the ENABLE_EXAMPLES:BOOL=ON option to cmake to build the
+example program (default is OFF).
+
+To link you need version 2.0 of the yajl library.  Source for the library is
+hosted at http://lloyd.gitbug.io/yajl.  It is also available as a standard
+system package in many Linux distributions; the "yajl" package in Fedora, for
+example.

@@ -1,0 +1,3 @@
+include_directories(${yajlfort_BINARY_DIR}/src/mod_files)
+add_executable (yajl_fort_parse_example yajl_fort_parse_example.F90)
+target_link_libraries(yajl_fort_parse_example yajl_fort)
