@@ -171,49 +171,28 @@ module yajl_fort
 
   !! Parser yajl_option enum values from yajl_parse.h.
   enum, bind(c)
-    enumerator :: yajl_allow_comments = 1
-    enumerator :: yajl_dont_validate_strings = 2
-    enumerator :: yajl_allow_trailing_garbage = 4
-    enumerator :: yajl_allow_multiple_values = 8
-    enumerator :: yajl_allow_partial_values = 16
+    enumerator :: FYAJL_ALLOW_COMMENTS = 1
+    enumerator :: FYAJL_DONT_VALIDATE_STRINGS = 2
+    enumerator :: FYAJL_ALLOW_TRAILING_GARBAGE = 4
+    enumerator :: FYAJL_ALLOW_MULTIPLE_DOCUMENTS = 8  ! ..._values in yajl_parse.h
+    enumerator :: FYAJL_ALLOW_PARTIAL_DOCUMENT = 16   ! ..._values in yajl_parse.h
   end enum
-
-  !! NB: The funky yajl_config function only accepts single-option values;
-  !! it does the or'ing for combinations internally.  So the only useful
-  !! part below are the public parameters.
-  !! -------------------------------------------------------------------------
-  !! Fortran parser option codes. Opaque type with specific parameter values
-  !! that wrap the yajl values above.  The + operator is overloaded to easily
-  !! enable the combination of options without having to resort to the use of
-  !! bit manipulation.  Instances are default initialized to "no options".
-  !! NB: the funky yajl_config function only accepts pure options; it does
-  !! the or'ing internally
-  !type, public :: fyajl_option
-  type :: fyajl_option
-    private
-    integer(c_int) :: value = 0
-  !contains
-  !  procedure, private :: fyajl_option_add
-  !  generic :: operator(+) => fyajl_option_add
-  !  procedure, private :: fyajl_option_remove
-  !  generic :: operator(-) => fyajl_option_remove
-  end type
-  type(fyajl_option), parameter, public :: &
-      fyajl_allow_comments         = fyajl_option(yajl_allow_comments), &
-      fyajl_dont_validate_strings  = fyajl_option(yajl_dont_validate_strings), &
-      fyajl_allow_trailing_garbage = fyajl_option(yajl_allow_trailing_garbage), &
-      fyajl_allow_multiple_values  = fyajl_option(yajl_allow_multiple_values), &
-      fyajl_allow_partial_values   = fyajl_option(yajl_allow_partial_values)
+  
+  !! Fortran parser options.  Passed to the set and unset methods.
+  public :: FYAJL_ALLOW_COMMENTS, FYAJL_DONT_VALIDATE_STRINGS, FYAJL_ALLOW_TRAILING_GARBAGE, &
+            FYAJL_ALLOW_MULTIPLE_DOCUMENTS, FYAJL_ALLOW_PARTIAL_DOCUMENT
 
   !! Parser yajl_status enum values from yajl_parse.h.
   enum, bind(c)
     enumerator :: yajl_status_ok, yajl_status_client_canceled, yajl_status_error
   end enum
 
-  !! Fortran parser return codes.  Could just have used the yajl_status_*
-  !! values directly, but decided to wrap them in an opaque type and provide
-  !! specific parameter values of this type that can be used in == and /=
-  !! comparisons.
+  !! Fortran parser return codes.  Wrapping the YAJL status value in a opaque
+  !! derived type solves the potential integer type mismatch problem between C
+  !! and Fortran.  The alternative is to require application code to use C_INT
+  !! kind integers for status values.  The derived type approach seems slightly
+  !! cleaner.  The comparison operators == and /= are defined to allow testing
+  !! of returned status values.
   type, public :: fyajl_status
     private
     integer(c_int) :: value
@@ -231,7 +210,6 @@ module yajl_fort
   !! Additional module functions (not type bound)
   public :: fyajl_get_error, fyajl_status_to_string
 
-  !! Abstract base class for the Fortran callback functions.
   !! INTEROPERABLE INTERFACES TO YAJL 2.0 LIBRARY FUNCTIONS
   interface
     function yajl_alloc (callbacks, afs, ctx) result(handle) bind(c)
@@ -458,16 +436,16 @@ contains
 
   subroutine set_option (this, option)
     class(fyajl_parser), intent(in) :: this
-    type(fyajl_option), intent(in) :: option
+    integer(c_int), intent(in) :: option
     integer :: stat
-    stat = yajl_config(this%handle, option%value, 1) ! ignore return code
+    stat = yajl_config(this%handle, option, 1) ! ignore return code
   end subroutine
 
   subroutine unset_option (this, option)
     class(fyajl_parser), intent(in) :: this
-    type(fyajl_option), intent(in) :: option
+    integer(c_int), intent(in) :: option
     integer :: stat
-    stat = yajl_config(this%handle, option%value, 0) ! ignore return code
+    stat = yajl_config(this%handle, option, 0) ! ignore return code
   end subroutine
 
   subroutine parse (this, buffer, stat)
@@ -506,12 +484,12 @@ contains
     class(fyajl_parser), intent(in) :: this
     logical, intent(in) :: verbose
     character(kind=c_char), intent(in) :: buffer(:)
-    character(len=:,kind=c_char), allocatable :: string
+    character(:,kind=c_char), allocatable :: string
     type(c_ptr) :: cptr
     if (verbose) then
-      cptr = yajl_get_error(this%handle, 1, buffer, int(size(buffer),kind=c_size_t))
+      cptr = yajl_get_error(this%handle, 1_c_int, buffer, int(size(buffer),kind=c_size_t))
     else
-      cptr = yajl_get_error(this%handle, 0, buffer, int(size(buffer),kind=c_size_t))
+      cptr = yajl_get_error(this%handle, 0_c_int, buffer, int(size(buffer),kind=c_size_t))
     end if
     string = f_string_pointer(cptr)
     call yajl_free_error (this%handle, cptr)
@@ -570,20 +548,6 @@ contains
     class(fyajl_gen_status), intent(in) :: s1, s2
     fyajl_gen_status_eq = (s1%value == s2%value)
   end function fyajl_gen_status_eq
-
-  !! FYAJL_OPTION type-bound procedures.
-
-  function fyajl_option_add (o1, o2) result (o1_add_o2)
-    class(fyajl_option), intent(in) :: o1, o2
-    type(fyajl_option) :: o1_add_o2
-    o1_add_o2%value = ior(o1%value, o2%value)
-  end function fyajl_option_add
-
-  function fyajl_option_remove (o1, o2) result (o1_not_o2)
-    class(fyajl_option), intent(in) :: o1, o2
-    type(fyajl_option) :: o1_not_o2
-    o1_not_o2%value = iand(o1%value, not(o2%value))
-  end function fyajl_option_remove
 
   !! The YAJL callback functions that populate the yajl_callbacks struct.
   !! Their interfaces are interoperable with the prototypes in yajl_parse.h.
