@@ -9,7 +9,7 @@ a superior format to XML for expressing input files, for example.
 
 The source consists of a single file yajl_fort.F90 which implements the
 interface, plus two small files (f90_assert.F90 and f90_assert.fpp) that
-implement a simple DBC (design-by-contract) system, that can be easily
+implement a simple DBC (design-by-contract) system, which can be easily
 incorporated into a larger software project.  The DBC can be easily stripped
 or disabled from the code, if desired.  Alternatively, code can be compiled
 into a library using the cmake-based build system

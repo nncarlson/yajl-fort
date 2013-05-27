@@ -1,12 +1,3 @@
-The interface to yajl_config is servicable but not quite right.
-There was some confusion about the behavior of yajl_config when
-the Fortran interface was written, and it was quickly patched up
-(see the commented-out code and comments), but never properly fixed.
-Yajl_config is a varargs function, which makes a fully-functioning
-interface to it high impossible.  What's required is a different
-C api that will play nicely with Fortran.  Others developing
-bindings for other languages expressed the same frustration.
-
 A prototype interface to the yajl JSON generator was added but
 only partially tested.  It exposed a bug in YAJL where a double
 value like 1.0 would be written simply as "1", which would be
