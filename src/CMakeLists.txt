@@ -1,6 +1,6 @@
-set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mod_files)
+set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/src/mod_files)
 add_library(yajl_fort yajl_fort.F90 f90_assert.F90)
 install(TARGETS yajl_fort DESTINATION lib)
-target_link_libraries(yajl_fort yajl)
+target_link_libraries(yajl_fort ${LIBS})
 
 install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/ DESTINATION include)

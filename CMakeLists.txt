@@ -1,6 +1,14 @@
 cmake_minimum_required(VERSION 2.8)
 
+set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
+
 project(yajlfort Fortran)
+
+find_package(YAJL REQUIRED)
+if("${YAJL_VERSION_STRING}" VERSION_LESS "2.0.1")
+  message(FATAL_ERROR "ERROR! version 2.0.1 or later of the yajl library is required")
+endif()
+set(LIBS ${LIBS} ${YAJL_LIBRARIES})
 
 option(ENABLE_EXAMPLES "Build example programs" OFF)
 
