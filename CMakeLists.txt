@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 2.8)
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/Modules/")
 
-project(yajlfort Fortran)
+project(yajlfort C Fortran)
 
 find_package(YAJL REQUIRED)
 if("${YAJL_VERSION_STRING}" VERSION_LESS "2.0.1")
