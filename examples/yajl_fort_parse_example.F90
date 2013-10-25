@@ -142,7 +142,7 @@ contains
     type(fyajl_parser), target :: parser
     type(fyajl_status) :: stat
     integer :: ios, last_pos, curr_pos, buflen
-    character :: buffer(128) ! intentionally small buffer
+    character :: buffer(64) ! intentionally small buffer for testing
     
     call parser%init (callbacks)
     call parser%set_option (FYAJL_ALLOW_COMMENTS)
@@ -150,7 +150,14 @@ contains
     open(10,file=trim(file),action='read',access='stream',form='unformatted')
     inquire(10,pos=last_pos)
     do
+#ifdef FILL_BUFFER_BY_CHARACTER
+      do buflen = 1, size(buffer)
+        read(10,iostat=ios) buffer(buflen)
+        if (ios /= 0) exit
+      end do
+#else
       read(10,iostat=ios) buffer
+#endif
       if (ios /= 0 .and. ios /= iostat_end) then
         write(error_unit,'(a,i0)') 'read error: iostat=', ios
         exit

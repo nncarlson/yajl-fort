@@ -23,6 +23,13 @@ if (CMAKE_Fortran_COMPILER_ID STREQUAL "NAG")
 elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
   set (CMAKE_Fortran_FLAGS_RELEASE "-O3 -DNDEBUG")
   set (CMAKE_Fortran_FLAGS_DEBUG   "-g")
+  message(STATUS "${CMAKE_Fortran_COMPILER_VERSION}")
+  # Extract the Intel compiler version
+  execute_process(COMMAND ${CMAKE_Fortran_COMPILER} --version OUTPUT_VARIABLE CMAKE_Fortran_COMPILER_VERSION)
+  string(REGEX MATCH "[0-9]+.[0-9]+.[0-9]+" CMAKE_Fortran_COMPILER_VERSION ${CMAKE_Fortran_COMPILER_VERSION})
+  if (${CMAKE_Fortran_COMPILER_VERSION} VERSION_LESS "13.0.1")
+    message(FATAL_ERROR "ERROR: Intel Fortran 13.0.1 or later is required; your version is ${CMAKE_Fortran_COMPILER_VERSION}")
+  endif()
 endif()
 
 add_subdirectory(src)

@@ -1,11 +1,18 @@
 YAJL-Fort
 
 YAJL (Yet Another JSON Library) is an event-driven parser for JSON (JavaScript
-Object Notation) format data streams.  The YAJL-Fort package provides a modern
-Fortran interface to the YAJL library.  Notwithstanding its name, the JSON text
-format is language independent and an excellent data interchange format.  It is
-light-weight, flexible, easy for humans to read and write, all of which make it
-a superior format to XML for expressing input files, for example.
+Object Notation) format data streams written in C.  The YAJL-Fort package
+provides a modern Fortran interface to the YAJL library.  Notwithstanding
+its name, the JSON text format is language independent and an excellent data
+interchange format.  It is light-weight, flexible, easy for humans to read
+and write, all of which make it a superior format to XML for expressing input
+files, for example.
+
+Note that YAJL, and therefore YAJL-Fort, does not concern itself with any
+internal data representation of the JSON text like some other JSON parsers.
+That is left to higher-level application code through customized parsing
+event callbacks.  An example of this can be found in the "parameter list"
+component of the Petaca Project, https://sourceforge.net/projects/petaca
 
 The source consists of a single file yajl_fort.F90 which implements the
 interface, plus two small files (f90_assert.F90 and f90_assert.fpp) that
@@ -19,17 +26,18 @@ The YAJL-Fort package is hosted on SourceForge: http://yajl-fort.sf.net
 Compiling
 --------
 
-The code is written in modern Fortran (read 2008) and requires a compiler
-that has a fairly complete implementation of the standard, which many do not.
-At this time the following compilers are known to work:
+The code is written in modern Fortran (read 2003, plus minor 2008 features)
+and requires a compiler that has a fairly complete implementation of the
+standard, which many do not.  At this time the following compilers are known
+to work:
 
   NAG versions >= 5.3
-  Intel versions >= 13.0
+  Intel versions >= 13.0.1 (*)
 
 The following compilers are known NOT to work:
 
   Intel versions < 13.0
-  gfortran <= 4.7.2
+  gfortran <= 4.8.1
 
 Reports of working/non-working compilers are appreciated.
 
@@ -38,7 +46,19 @@ Fortran compiler you intend, set your environment variable FC to the path to
 the compiler.  Use the ENABLE_EXAMPLES:BOOL=ON option to cmake to build the
 example program (default is OFF).
 
-To link you need version 2.0 of the yajl library.  Source for the library is
-hosted at http://lloyd.github.io/yajl.  It is also available as a standard
-system package in many Linux distributions; the "yajl" package in Fedora, for
-example.
+Version 2.0.1 or later of the yajl library is required.  Source releases
+for the library can be found at https://github.com/lloyd/yajl/releases;
+2.0.4 is the latest as of this writing.  CMake will automatically find the
+header files and library if they are installed in a standard location.
+Otherwise use the YAJL_LIBRARY_DIR and YAJL_INCLUDE_DIR cmake variables
+to provide the (full) path to the directories containing the library and
+header files (which are stored in the "yajl" subdirectory of the directory).
+YAJL is available as a standard system package in many Linux distributions;
+the yajl and yajl-devel packages in Fedora, for example.
+
+---
+
+(*) The Intel 13.0.1 compiler has a bug in the way stream input is handled
+when an EOF is encountered (issue number DPD200237439).  This was fixed in
+version 13.1.0.  The example includes a workaround for the bug, however
+most any application using yajl-fort will also need to work around it.
