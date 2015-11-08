@@ -12,6 +12,8 @@ set(LIBS ${LIBS} ${YAJL_LIBRARIES})
 
 option(ENABLE_EXAMPLES "Build example programs" OFF)
 
+option(ENABLE_JSON "Build experimental json module and tests" OFF)
+
 if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
@@ -21,8 +23,8 @@ if (CMAKE_Fortran_COMPILER_ID STREQUAL "NAG")
   set (CMAKE_Fortran_FLAGS_RELEASE "-O3 -w=uda -DNDEBUG")
   set (CMAKE_Fortran_FLAGS_DEBUG   "-g90")
 elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
-  set (CMAKE_Fortran_FLAGS_RELEASE "-O3 -DNDEBUG")
-  set (CMAKE_Fortran_FLAGS_DEBUG   "-g")
+  set (CMAKE_Fortran_FLAGS_RELEASE "-O3 -DNDEBUG -assume realloc_lhs")
+  set (CMAKE_Fortran_FLAGS_DEBUG   "-g -assume realloc_lhs")
   message(STATUS "${CMAKE_Fortran_COMPILER_VERSION}")
   # Extract the Intel compiler version
   execute_process(COMMAND ${CMAKE_Fortran_COMPILER} --version OUTPUT_VARIABLE CMAKE_Fortran_COMPILER_VERSION)
@@ -32,8 +34,23 @@ elseif (CMAKE_Fortran_COMPILER_ID STREQUAL "Intel")
   endif()
 endif()
 
+# Fortran preprocessor defines
+set(Fortran_COMPILE_DEFINITIONS)
+if(CMAKE_Fortran_COMPILER_ID MATCHES Intel)
+  list(APPEND Fortran_COMPILE_DEFINITIONS NO_2008_LHS_POLY_REALLOC)
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES NAG)
+  # NAG 6.0 actually supports this feature, but not able to get version yet
+  list(APPEND Fortran_COMPILE_DEFINITIONS NO_2008_LHS_POLY_REALLOC)
+elseif(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
+  list(APPEND Fortran_COMPILE_DEFINITIONS NO_2008_LHS_POLY_REALLOC)
+endif()
+
 add_subdirectory(src)
 
 if(ENABLE_EXAMPLES)
   add_subdirectory(examples)
+endif()
+
+if(ENABLE_JSON)
+  add_subdirectory(test/json)
 endif()
