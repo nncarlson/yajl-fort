@@ -1,4 +1,4 @@
-add_executable(json-strip strip.F90)
+add_executable(json-strip strip.f90)
 target_link_libraries(json-strip yajl_fort)
 
 add_test(NAME strip-file1 COMMAND
