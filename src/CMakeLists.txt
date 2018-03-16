@@ -1,18 +1,25 @@
-set(CMAKE_Fortran_MODULE_DIRECTORY ${CMAKE_BINARY_DIR}/src/mod_files)
-include_directories(${YAJL_INCLUDE_DIR} ${CMAKE_Fortran_MODULE_DIRECTORY})
+set(SRC yajl_fort.F90 yajl_ext.c f90_assert.F90 json.F90)
+set(INC f90_assert.fpp)
 
-set(sources yajl_fort.F90 yajl_ext.c f90_assert.F90)
-if(ENABLE_JSON)
-  list(APPEND sources json.F90)
-endif()
+set(LIB_MOD_DIR ${CMAKE_CURRENT_BINARY_DIR}/mod_files/)
 
-add_library(yajl_fort ${sources})
-install(TARGETS yajl_fort DESTINATION lib)
-target_link_libraries(yajl_fort ${LIBS})
+add_library(yajl_fort ${SRC})
 
-install(DIRECTORY ${CMAKE_Fortran_MODULE_DIRECTORY}/ DESTINATION include)
+set_target_properties(yajl_fort PROPERTIES
+    Fortran_MODULE_DIRECTORY ${LIB_MOD_DIR})
 
-### Preprocessor defines
-foreach(def ${Fortran_COMPILE_DEFINITIONS})
-  set_property (TARGET yajl_fort APPEND PROPERTY COMPILE_DEFINITIONS ${def})
-endforeach()
+target_include_directories(yajl_fort PUBLIC
+    $<BUILD_INTERFACE:${LIB_MOD_DIR}>
+    $<INSTALL_INTERFACE:lib>
+    PRIVATE
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+)
+
+target_link_libraries(yajl_fort yajl)
+
+install(TARGETS yajl_fort
+        EXPORT  yajl_fort
+        LIBRARY DESTINATION lib
+        ARCHIVE DESTINATION lib
+)
+install(DIRECTORY ${LIB_MOD_DIR} DESTINATION lib)

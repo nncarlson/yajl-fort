@@ -179,6 +179,9 @@ module json
 
   type, public :: json_object_iterator
     private
+#ifdef GNU_PR61767
+    integer, allocatable :: dummy
+#endif
     type(object_member), pointer :: member => null()
   contains
     procedure :: next => obj_iter_next
@@ -194,7 +197,12 @@ module json
 
   type, extends(json_struct), public :: json_array
     private
+#ifdef INTEL_BUG20171115
+    type(array_element), pointer :: first => null()
+    type(array_element), pointer :: last => null()
+#else
     type(array_element), pointer :: first => null(), last => null()
+#endif
   contains
     procedure :: append => array_append_value
     procedure :: write => array_write
@@ -210,6 +218,9 @@ module json
 
   type, public :: json_array_iterator
     private
+#ifdef GNU_PR61767
+    integer, allocatable :: dummy
+#endif
     type(array_element), pointer :: element => null()
   contains
     procedure :: next => array_iter_next
@@ -702,7 +713,7 @@ contains
     status = FYAJL_CONTINUE_PARSING
   end function store_value
 
-  subroutine json_from_stream (unit, value, stat, errmsg)
+  subroutine json_from_stream (unit, value, stat, errmsg, bufsize)
 
     use,intrinsic :: iso_fortran_env, only: error_unit, iostat_end
     use,intrinsic :: iso_c_binding, only: c_char
@@ -711,18 +722,25 @@ contains
     class(json_value), allocatable, intent(out) :: value
     integer, intent(out) :: stat
     character(:), allocatable, intent(out) :: errmsg
+    integer, intent(in), optional :: bufsize  ! for testing purposes mostly
 
     type(json_builder), target :: builder
     type(fyajl_parser), target :: parser
     type(fyajl_status) :: yajl_stat
 
     integer, parameter :: BUFFER_SIZE = 4096
-    character(kind=c_char) :: buffer(BUFFER_SIZE)
+    character(kind=c_char), allocatable :: buffer(:)
     integer :: buflen, last_pos, curr_pos, ios
 
     !TODO: check unit is open with unformatted stream access
 
     stat = 0
+
+    if (present(bufsize)) then
+      allocate(buffer(bufsize))
+    else
+      allocate(buffer(BUFFER_SIZE))
+    end if
 
     !! Initialize the parser
     call parser%init (builder)
