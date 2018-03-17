@@ -19,6 +19,7 @@ for populating the data structures with JSON data read from a file or string.
    :maxdepth: 1
    :caption: Contents:
 
+   build
    yajl_fort
    json
 

@@ -1,7 +1,0 @@
-A prototype interface to the yajl JSON generator was added but
-only partially tested.  It exposed a bug in YAJL where a double
-value like 1.0 would be written simply as "1", which would be
-interpreted rightly by a JSON parser as an integer value, when
-what is wanted is a double value.  At that point development on
-this part of the interface was tabled.  The bug was reported, and
-confirmed by other users, but has never been fixed as far as I know.

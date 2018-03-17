@@ -8,7 +8,7 @@ The ``json`` module defines derived data types for representing arbitrary
 JSON data, and procedures for instantiating objects of those types from JSON
 data read from a file or string.
 
-This module uses :ref:`yajl-fort <yajl_fort>` for parsing the JSON input data.
+This module uses :ref:`yajl_fort <yajl_fort>` for parsing the JSON input data.
 
 .. note::
 
