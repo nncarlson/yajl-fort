@@ -294,7 +294,7 @@ contains
   subroutine json_real_write (this, unit)
     class(json_real), intent(in) :: this
     integer, intent(in) :: unit
-    write(unit,'(g0)') this%value  !FIXME: need proper format
+    write(unit,'(es13.5)') this%value  !FIXME: need proper format
   end subroutine json_real_write
 
   subroutine json_string_write (this, unit)
