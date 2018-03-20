@@ -62,10 +62,15 @@ The following compilers are known to work:
 The following compilers are known to **not** work:
 
 * Flang (5.0.1, b356fc9b, 20180316 master)
-* PGI 17
+* Any PGI up to and including 18.1.1
 
-The ``CMakeLists.txt`` file has special stanzas for some compilers (Intel,
-NAG, GNU) that set specific flags that are known to be needed. If you are
+  * ``yajl_fort`` module may be usable for 18.1.1, but no earlier version.
+  * See test case `pgi-20180320.f90
+    <https://github.com/nncarlson/fortran-compiler-tests/blob/master/pgi-bugs/pgi-20180320.f90>`_
+    for bug affecting ``json`` module.
+
+The ``CMakeLists.txt`` file has special stanzas for some compilers
+that set specific flags that are known to be needed. If you are
 using another compiler it too may need some special flags.  These can be
 set on the ``cmake`` command line with ``CMAKE_Fortran_FLAGS`` or a stanza
 can be added to the ``CMakeLists.txt`` file.
