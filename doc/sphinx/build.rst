@@ -50,17 +50,19 @@ Then compile the library and tests, and run the tests (all should pass)::
 Then see the documentation for the :ref:`yajl_fort <yajl_fort>` and
 :ref:`json <json-module>` modules and the examples therein.
 
-Compiler status
----------------
+Compiler status and notes
+-------------------------
 The following compilers are known to work:
 
 * NAG 5.3.2, 6.0, 6.1, and 6.2
 * Intel 16.0.2, 17.0.6, 18.0.1
 * GFortran 6.4.1, 7.2.1, 7.3.1, 8.0.1 (20180311 trunk)
+* IBM xlf 15.1.6 (use the xlf2008 executable)
 
 The following compilers are known to **not** work:
 
-* Flang (5.0.1, b356fc9b, 20180316 master) 
+* Flang (5.0.1, b356fc9b, 20180316 master)
+* PGI 17
 
 The ``CMakeLists.txt`` file has special stanzas for some compilers (Intel,
 NAG, GNU) that set specific flags that are known to be needed. If you are
