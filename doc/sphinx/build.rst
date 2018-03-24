@@ -14,8 +14,6 @@ Prerequisites:
 * A Fortran compiler that supports the 2003/2008 features used by YAJL-Fort,
   and its companion (or a compatible) C compiler.
 
-The YAJL-Fort website is at https://github.com/nncarlson/yajl-fort.
-
 Clone the YAJL-Fort source repository with SSH::
 
   git clone git@github.com:nncarlson/yajl-fort.git
@@ -25,7 +23,10 @@ or with HTTPS::
   git clone https://github.com/nncarlson/yajl-fort.git
 
 Set your ``FC`` and ``CC`` environment variables to your Fortran and C
-compilers. Create a build directory and run ``cmake`` from the directory::
+compilers. If YAJL is not in a standard location you will also need to
+set your ``YAJL_ROOT`` environment variable to the root directory of the
+YAJL installation. Then create a build directory and run ``cmake`` from
+the directory::
 
   cd yajl-fort
   mkdir build
@@ -39,8 +40,6 @@ variables you might want to set on the ``cmake`` command line:
 * ``CMAKE_BUILD_TYPE``: to specify a ``Debug`` build type, for example
 * ``CMAKE_Fortran_FLAGS``: additional Fortran compiler flags
 * ``CMAKE_INSTALL_PREFIX``: where to install the library and module files
-
-Note: installation/packaging might not be fully working at this time.
 
 Then compile the library and tests, and run the tests (all should pass)::
 

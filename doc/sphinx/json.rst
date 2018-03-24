@@ -1,12 +1,12 @@
 .. _json-module:
 
-===================
-The ``json`` module
-===================
+===============
+The json module
+===============
 
 The ``json`` module defines derived data types for representing arbitrary
 JSON data, and procedures for instantiating objects of those types from JSON
-data read from a file or string.
+text read from a file or string.
 
 This module uses :ref:`yajl_fort <yajl_fort>` for parsing the JSON input data.
 
@@ -23,17 +23,17 @@ Usage
 Refer to http://www.json.org for a detailed description of the JSON syntax.
 The derived types and terminology used here adhere closely to that description.
 
-The abstract type ``json_value`` represents a JSON `value`. A polymorphic
-instance of this class will have one of the following dynamic extended types:
+The abstract type ``json_value`` represents a JSON `value`. The dynamic type
+of a polymorphic instance of this class will be one of these extended types:
 
-  :``json_integer``:  stores a JSON `number` without fractional part (P)
-  :``json_real``:     stores a JSON `number` with fractional part (P)
-  :``json_string``:   stores a JSON `string` (P)
-  :``json_boolean``:  stores a logical for the JSON literals ``true``
-                      and ``false`` (P)
-  :``json_null``:     represents the JSON literal ``null`` (P)
-  :``json_object``:   stores a JSON `object` (S)
-  :``json_array``:    stores a JSON `array` (S)
+:``json_integer``:  stores a JSON *number* without fractional part (P)
+:``json_real``:     stores a JSON *number* with fractional part (P)
+:``json_string``:   stores a JSON *string* (P)
+:``json_boolean``:  stores a logical for the JSON literals ``true``
+                    and ``false`` (P)
+:``json_null``:     represents the JSON literal ``null`` (P)
+:``json_object``:   stores a JSON *object* (S)
+:``json_array``:    stores a JSON *array* (S)
 
 The primitive types (P) have a public component ``%value`` that stores the
 corresponding value (except for ``json_null``). The content of the structure
@@ -63,7 +63,7 @@ For ``json_array`` values:
    end do
 
 The following subroutines allocate and define an allocatable
-``class(json_value)`` variable with JSON data read from a string or logical
+``class(json_value)`` variable with JSON text read from a string or logical
 unit opened for unformatted stream input.
 
 .. code-block:: fortran

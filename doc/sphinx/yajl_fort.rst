@@ -1,25 +1,24 @@
 .. _yajl_fort:
 
-========================
-The ``yajl_fort`` module
-========================
+====================
+The yajl_fort module
+====================
 
-The ``yajl_fort`` module defines an object oriented Fortran interface to the
-YAJL library. YAJL is an event-driven parsing library, written in C, for
-`JSON <http://www.json.org/>`_ data streams. The JSON grammar is language
-independent and an excellent data interchange format. It is light weight,
-flexible, easy for humans to read and write, all of which make it a superior
-format to XML for many I/O uses.
+The ``yajl_fort`` module defines an object-oriented Fortran interface to
+the YAJL C library, which is an event-driven parser for JSON data streams.
+`JSON <http://www.json.org/>`_ is an open standard data interchange format.
+It is lightweight, flexible, easy for humans to read and write, and language
+independent.
 
 .. note::
 
-  Unlike most other JSON libraries, YAJL does not provide (or impose) an
+  Unlike most other JSON libraries, YAJL does not provide or impose an
   in-memory data representation, but instead uses callbacks to accommodate
   any in-memory representation. The same is true of ``yajl_fort``, being
-  only an interface to YAJL. If you want an in-memory representation (and you
-  most likely do), you may do so using ``yajl_fort``, but you provide the
-  code that defines and populates the in-memory representation using the
-  callbacks according to your specific requirements.
+  only an interface to YAJL. If you want an in-memory representation (and
+  you most likely do), you may do so using ``yajl_fort``, but you provide
+  the code that defines and populates the in-memory representation using
+  the callbacks according to your specific requirements.
 
 Synopsis
 ========
@@ -56,8 +55,10 @@ this library can be downloaded from https://github.com/lloyd/yajl/releases.
 The library is also available as a standard binary package in all major Linux
 distributions.  See http://lloyd.github.io/yajl/ for additional information.
 
-Parser Callback Functions
+Parser callback functions
 =========================
+JSON overview
+-------------
 The JSON data language is quite simple.  It is built on two basic data
 structures.  An *array* is an ordered list of comma-separated *values*
 enclosed in brackets (``[`` and ``]``).  An *object* is an unordered list of
@@ -66,10 +67,17 @@ A *name* is a string enclosed in double quotes, and a *value* is one of
 the following: a string in double quotes, a number (integer or real), a
 boolean literal (``true`` or ``false``), the literal ``null``, or an *object*
 or *array*. Note how the data structures can be nested. Whitespace is
-insignificant except in strings.  At the top level, a valid JSON document
-consists of a single *object*. See http://www.json.org for a detailed
-description of the syntax.
+insignificant except in strings. At the outermost level, what is considered
+valid JSON text varies between the several standard documents, and it comes
+down to a matter of agreement between the producer and consumer of the data.
+Originally it was required to be an *object* or *array*, but more recently
+any JSON *value* is considered valid. The YAJL library follows the latter.
+See this `blog post <https://www.mattlunn.me.uk/blog/2014/01/what-is-the-minimum-valid-json/>`_
+for a discussion of the issue, and http://www.json.org for a detailed
+description of the JSON syntax.
 
+The callbacks derived type
+--------------------------
 The C language YAJL parser operates by calling application-defined callback
 functions in response to the various events encountered while parsing the
 input stream.  The callback functions communicate with each other through
@@ -187,7 +195,7 @@ method:
      type(fyajl_status), intent(out) :: stat
 
 Successive chunks of the JSON text are passed in the ``buffer`` array, and
-the parsing status is returned in ``stat``; see `Error Handling`_.
+the parsing status is returned in ``stat``; see `Error handling`_.
 
 After all the JSON text has been fed to the parser, the ``parse_complete``
 method must be called to parse any internally buffered JSON text that
@@ -201,25 +209,25 @@ might remain:
 This is required because the parser is stream based and it needs an explicit
 end-of-input signal to force it to parse content at the end of the stream that
 sometimes exists.  The parsing status is returned in ``stat``; see
-`Error Handling`_.
+`Error handling`_.
 
 The function call ``parser%bytes_consumed()`` returns the number of
 characters consumed from ``buffer`` in the last call to ``parse``.
 
-Error Handling
+Error handling
 --------------
 The ``parse`` and ``parse_complete`` methods return a ``type(fyajl_status)``
 status value, which equals one of the following module parameters:
 
-  ``FYAJL_STATUS_OK``
-    No error.
+``FYAJL_STATUS_OK``
+  No error.
 
-  ``FYAJL_STATUS_ERROR``
-    A parsing error was encountered; use ``fyajl_get_error`` to get
-    information about it.
+``FYAJL_STATUS_ERROR``
+  A parsing error was encountered; use ``fyajl_get_error`` to get
+  information about it.
 
-  ``FYAJL_STATUS_CLIENT_CANCELLED``
-    One of the callback procedures returned ``FYAJL_TERMINATE_PARSING``.
+``FYAJL_STATUS_CLIENT_CANCELLED``
+  One of the callback procedures returned ``FYAJL_TERMINATE_PARSING``.
 
 The comparison operators ``==`` and ``/=`` are defined for
 ``type(fyajl_status)`` values.
@@ -235,17 +243,17 @@ Several additional functions (not type bound) are provided for error handling.
 Returns a character string describing the the error encountered by the parser.
 If ``verbose`` is true, the message will include the portion of the input
 stream where the error occurred together with an arrow pointing to the specific
-character.  The ``buffer`` array should contain the chunk of JSON input
-passed in the last call to ``parse`` or ``parse_complete``.
+character.  The ``buffer`` array should contain the chunk of JSON text
+passed in the last call to ``parse``.
 
 .. code-block:: fortran
 
    fyajl_status_to_string(code)
      type(fyajl_status), intent(in) :: code
 
-Returns a character string describing the specified status value.
+Returns a character string describing the specified status value ``code``.
 
-Parsing Options
+Parsing options
 ---------------
 The parser supports several options provided by the YAJL library. They are
 set and unset using the ``set_option`` and ``unset_option`` methods after
@@ -260,7 +268,7 @@ where ``option`` is one of the following module parameters.
 The default for all is unset.
 
 ``FYAJL_ALLOW_COMMENTS``
-  JSON does not provide for comments.  Setting this option causes the
+  JSON does not allow for comments.  Setting this option causes the
   parser to ignore javascript style comments in the input stream.  This
   includes single-line comments that begin with ``//`` and continue
   to the end of the line.  This is a very useful extention to the JSON

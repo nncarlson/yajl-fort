@@ -15,6 +15,10 @@ Also included in YAJL-Fort is a module that defines data structures for
 representing arbitrary JSON data, and procedures built on the YAJL interface
 for populating the data structures with JSON data read from a file or string.
 
+YAJL-Fort is open source software, distributed under the :doc:`MIT license <license>`.
+
+Get YAJL-Fort on GitHub: https://github.com/nncarlson/yajl-fort
+
 .. toctree::
    :maxdepth: 1
    :caption: Contents:
