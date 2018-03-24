@@ -6,17 +6,20 @@
 #  YAJL_LIBRARIES
 #  YAJL_VERSION
 #
-# This module also defines the imported library target "yajl".  It is
-# generally enough to include "yajl" as a target link library; cmake
+# This module defines the imported library target YAJL::YAJL.  It is
+# generally enough to include YAJL::YAJL as a target link library; cmake
 # will automatically handle adding the appropriate compile include flags
 # and collection of link libraries.
 #
-# Set the variable CMAKE_PREFIX_PATH to provide a hint to the module for
-# where to find the library and header file.  This is searched before the
-# standard system locations.
+# Set the variable CMAKE_PREFIX_PATH or environment variable YAJL_ROOT to
+# provide a hint to the module for where to find the library and header file.
+# This is searched before the standard system locations.
 
-find_path(YAJL_INCLUDE_DIR yajl/yajl_common.h)
-find_library(YAJL_LIBRARY NAMES yajl yajl_s) 
+set(yajl_search_paths ENV YAJL_ROOT)
+find_path(YAJL_INCLUDE_DIR NAMES yajl/yajl_common.h
+          HINTS ${yajl_search_paths} PATH_SUFFIXES include)
+find_library(YAJL_LIBRARY NAMES yajl yajl_s
+             HINTS ${yajl_search_paths} PATH_SUFFIXES lib)
 
 if(NOT YAJL_VERSION)
   if(YAJL_INCLUDE_DIR AND YAJL_LIBRARY)
@@ -37,16 +40,16 @@ endif()
 
 include(FindPackageHandleStandardArgs)
 find_package_handle_standard_args(YAJL
-    REQUIRED_VARS YAJL_LIBRARY YAJL_INCLUDE_DIR 
+    REQUIRED_VARS YAJL_LIBRARY YAJL_INCLUDE_DIR
     VERSION_VAR YAJL_VERSION)
 
 if(YAJL_FOUND)
   set(YAJL_INCLUDE_DIRS ${YAJL_INCLUDE_DIR})
   set(YAJL_LIBRARIES ${YAJL_LIBRARY})
   mark_as_advanced(YAJL_INCLUDE_DIR YAJL_LIBRARY)
-  if(NOT TARGET yajl)
-    add_library(yajl UNKNOWN IMPORTED)
-    set_target_properties(yajl PROPERTIES
+  if(NOT TARGET YAJL::YAJL)
+    add_library(YAJL::YAJL UNKNOWN IMPORTED)
+    set_target_properties(YAJL::YAJL PROPERTIES
         IMPORTED_LOCATION "${YAJL_LIBRARY}"
         INTERFACE_INCLUDE_DIRECTORIES "${YAJL_INCLUDE_DIRS}"
         INTERFACE_LINK_LIBRARIES "${YAJL_LIBRARIES}")

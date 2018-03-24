@@ -15,7 +15,7 @@ target_include_directories(yajl_fort PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
 )
 
-target_link_libraries(yajl_fort yajl)
+target_link_libraries(yajl_fort YAJL::YAJL)
 
 install(TARGETS yajl_fort
         EXPORT  yajl_fort

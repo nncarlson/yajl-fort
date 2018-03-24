@@ -35,6 +35,11 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
   add_definitions(-DNO_2008_LHS_POLY_REALLOC)
 endif()
 
+# RPATH handling for installed shared libraries and dynamically-linked
+# executables.  See http://www.cmake.org/Wiki/CMake_RPATH_handling
+set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+
 add_subdirectory(src)
 
 option(BUILD_TESTS "Build test programs" ON)
