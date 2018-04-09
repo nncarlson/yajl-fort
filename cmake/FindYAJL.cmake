@@ -11,15 +11,24 @@
 # will automatically handle adding the appropriate compile include flags
 # and collection of link libraries.
 #
-# Set the variable CMAKE_PREFIX_PATH or environment variable YAJL_ROOT to
-# provide a hint to the module for where to find the library and header file.
-# This is searched before the standard system locations.
+# To provide the module with a hint about where to find your YAJL installation
+# you have several options. You can include the root installation directory in
+# the setting of the CMAKE_PREFIX_PATH variable, or you can set the environment
+# variable YAJL_ROOT or the cmake variable YAJL_ROOT.
 
-set(yajl_search_paths ENV YAJL_ROOT)
+if(NOT YAJL_ROOT)
+  set(YAJL_ROOT $ENV{YAJL_ROOT})
+endif()
+if(YAJL_ROOT)
+  set(yajl_search_opts NO_DEFAULT_PATH)
+else()
+  set(yajl_search_opts)
+endif()
+
 find_path(YAJL_INCLUDE_DIR NAMES yajl/yajl_common.h
-          HINTS ${yajl_search_paths} PATH_SUFFIXES include)
+          HINTS ${YAJL_ROOT} ${yajl_search_opts} PATH_SUFFIXES include)
 find_library(YAJL_LIBRARY NAMES yajl yajl_s
-             HINTS ${yajl_search_paths} PATH_SUFFIXES lib)
+             HINTS ${YAJL_ROOT} ${yajl_search_opts} PATH_SUFFIXES lib)
 
 if(NOT YAJL_VERSION)
   if(YAJL_INCLUDE_DIR AND YAJL_LIBRARY)
