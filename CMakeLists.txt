@@ -13,12 +13,14 @@ if(NOT CMAKE_BUILD_TYPE)
   set(CMAKE_BUILD_TYPE Release)
 endif()
 
+# NAG Fortran compiler flags
 if(CMAKE_Fortran_COMPILER_ID MATCHES NAG)
   include(NAGFortranCompilerVersion)  # for older NAG versions
   set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -w=uda -DNDEBUG")
   set(CMAKE_Fortran_FLAGS_DEBUG "-g -gline")
 endif()
 
+# Intel Fortran compiler flags
 if(CMAKE_Fortran_COMPILER_ID MATCHES Intel)
   add_definitions(-DNO_2008_LHS_POLY_REALLOC)
   if(CMAKE_Fortran_COMPILER_VERSION VERSION_LESS "17.0.0")
@@ -29,9 +31,15 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES Intel)
   endif()
 endif()
 
+# GFortran compiler flags
 if(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
   set(CMAKE_Fortran_FLAGS "-ffree-line-length-none")
   add_definitions(-DGNU_PR61767)
+  add_definitions(-DNO_2008_LHS_POLY_REALLOC)
+endif()
+
+# PGI Fortran compiler flags
+if(CMAKE_Fortran_COMPILER_ID MATCHES PGI)
   add_definitions(-DNO_2008_LHS_POLY_REALLOC)
 endif()
 

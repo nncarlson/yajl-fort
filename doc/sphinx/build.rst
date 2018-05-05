@@ -61,9 +61,9 @@ The following compilers are known to work:
 The following compilers are known to **not** work:
 
 * Flang (5.0.1, b356fc9b, 20180316 master)
-* Any PGI up to and including 18.1.1
+* Any PGI up to and including 18.4
 
-  * ``yajl_fort`` module may be usable for 18.1.1, but no earlier version.
+  * ``yajl_fort`` module may be usable for 18.1.1+, but no earlier version.
   * See test case `pgi-20180320.f90
     <https://github.com/nncarlson/fortran-compiler-tests/blob/master/pgi-bugs/pgi-20180320.f90>`_
     for bug affecting ``json`` module.
