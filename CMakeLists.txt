@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.10)
 
 project(YAJL-Fort C Fortran)
 
@@ -38,8 +38,13 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
   add_definitions(-DNO_2008_LHS_POLY_REALLOC)
 endif()
 
-# PGI Fortran compiler flags
+# PGI Fortran compiler flags (not working)
 if(CMAKE_Fortran_COMPILER_ID MATCHES PGI)
+  add_definitions(-DNO_2008_LHS_POLY_REALLOC)
+endif()
+
+# Flang compiler flags (not working)
+if(CMAKE_Fortran_COMPILER_ID MATCHES Flang)
   add_definitions(-DNO_2008_LHS_POLY_REALLOC)
 endif()
 
