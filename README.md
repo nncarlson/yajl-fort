@@ -16,3 +16,28 @@ for populating the data structures with JSON data read from a file or string.
 
 Documentation for building and using YAJL-Fort is at
 [ReadTheDocs](http://yajl-fort.readthedocs.io/)
+
+### Compiler Status
+
+The following compilers are known to work:
+
+* NAG 5.3.2, 6.0, 6.1, and 6.2
+* Intel 16.0.2, 17.0.6, 18.0.1
+* GFortran 6.4.1, 7.2.1, 7.3.1, 8.1, 8.2
+* IBM xlf 15.1.6, 16.1.0 (must use the xlf2008 executable)
+
+The following compilers are known to **not** work:
+
+* Flang (6.0.1, bc824d3b, 20180804 master)
+* Any PGI up to and including 18.4
+
+  * The ``yajl_fort`` module may be usable for 18.1.1+, but no earlier version.
+  * See test case https://github.com/nncarlson/fortran-compiler-tests/blob/master/pgi-bugs/pgi-20180320.f90>
+    for a bug affecting the ``json`` module.
+
+The ``CMakeLists.txt`` file has special stanzas for some compilers that set
+compiler flags and preprocessor macros that are known to be needed. If you
+are using another compiler it too may need specific compiler flags or macros
+defined.  These can be set on the ``cmake`` command line with
+``CMAKE_Fortran_FLAGS`` or a stanza can be added to the ``CMakeLists.txt``
+file.
