@@ -29,10 +29,10 @@ The following compilers are known to work:
 The following compilers are known to **not** work:
 
 * Flang (6.0.1, bc824d3b, 20180804 master)
-* Any PGI up to and including 18.4
+* Any PGI up to and including 18.10
 
-  * The ``yajl_fort`` module may be usable for 18.1.1+, but no earlier version.
-  * See test case https://github.com/nncarlson/fortran-compiler-tests/blob/master/pgi-bugs/pgi-20180320.f90>
+  * The ``yajl_fort`` module *may* be usable for 18.1.1+, but no earlier version.
+  * See test case https://github.com/nncarlson/fortran-compiler-tests/blob/master/pgi-bugs/pgi-src-alloc-3.f90
     for a bug affecting the ``json`` module.
 
 The ``CMakeLists.txt`` file has special stanzas for some compilers that set
