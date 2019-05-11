@@ -26,14 +26,11 @@ The following compilers are known to work:
 * GFortran 6.4.1, 7.2.1, 7.3.1, 8.1, 8.2
 * IBM xlf 15.1.6, 16.1.0 (must use the xlf2008 executable)
 
-The following compilers are known to **not** work:
+The following compilers **appear** to work now. All tests are passing but
+the interface has not been extensively exercised in actual applications.
 
-* Flang (6.0.1, bc824d3b, 20180804 master)
-* Any PGI up to and including 18.10
-
-  * The ``yajl_fort`` module *may* be usable for 18.1.1+, but no earlier version.
-  * See test case https://github.com/nncarlson/fortran-compiler-tests/blob/master/pgi-bugs/pgi-src-alloc-3.f90
-    for a bug affecting the ``json`` module.
+* Flang March 2019 Binary Release (but no earlier)
+* PGI 19.4 (but no earlier)
 
 The ``CMakeLists.txt`` file has special stanzas for some compilers that set
 compiler flags and preprocessor macros that are known to be needed. If you

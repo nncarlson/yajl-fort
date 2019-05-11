@@ -570,7 +570,16 @@ contains
     if (associated(this%top)) then
       top => this%top
       call move_alloc (top%struct, struct)
+#ifdef FLANG_ISSUE721
+      if (present(name)) then
+        if (allocated(top%name)) then
+          name = top%name
+          deallocate(top%name)
+        end if
+      endif
+#else
       if (present(name)) call move_alloc (top%name, name)
+#endif
       this%top => top%next
       top%next => null()
       deallocate(top)
@@ -682,7 +691,13 @@ contains
     character(*), intent(in) :: value
     class(json_value), allocatable :: val
 #ifdef NO_2008_LHS_POLY_REALLOC
+#ifdef FLANG_ISSUE720
+    type(json_string) :: tmp
+    tmp%value = value
+    allocate(val, source=tmp)
+#else
     allocate(val, source=json_string(value))
+#endif
 #else
     val = json_string(value)
 #endif

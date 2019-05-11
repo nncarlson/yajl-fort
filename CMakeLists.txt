@@ -41,11 +41,15 @@ endif()
 # PGI Fortran compiler flags (not working)
 if(CMAKE_Fortran_COMPILER_ID MATCHES PGI)
   add_definitions(-DNO_2008_LHS_POLY_REALLOC)
+  add_definitions(-DFLANG_ISSUE720)
+  add_definitions(-DFLANG_ISSUE721)
 endif()
 
 # Flang compiler flags (not working)
 if(CMAKE_Fortran_COMPILER_ID MATCHES Flang)
   add_definitions(-DNO_2008_LHS_POLY_REALLOC)
+  add_definitions(-DFLANG_ISSUE720)
+  add_definitions(-DFLANG_ISSUE721)
 endif()
 
 # RPATH handling for installed shared libraries and dynamically-linked
