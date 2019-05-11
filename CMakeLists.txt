@@ -38,14 +38,14 @@ if(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
   add_definitions(-DNO_2008_LHS_POLY_REALLOC)
 endif()
 
-# PGI Fortran compiler flags (not working)
+# PGI Fortran compiler flags
 if(CMAKE_Fortran_COMPILER_ID MATCHES PGI)
   add_definitions(-DNO_2008_LHS_POLY_REALLOC)
   add_definitions(-DFLANG_ISSUE720)
   add_definitions(-DFLANG_ISSUE721)
 endif()
 
-# Flang compiler flags (not working)
+# Flang compiler flags
 if(CMAKE_Fortran_COMPILER_ID MATCHES Flang)
   add_definitions(-DNO_2008_LHS_POLY_REALLOC)
   add_definitions(-DFLANG_ISSUE720)
