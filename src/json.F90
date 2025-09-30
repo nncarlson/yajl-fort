@@ -179,9 +179,6 @@ module json
 
   type, public :: json_object_iterator
     private
-#ifdef GNU_PR61767
-    integer, allocatable :: dummy
-#endif
     type(object_member), pointer :: member => null()
   contains
     procedure :: next => obj_iter_next
@@ -197,12 +194,7 @@ module json
 
   type, extends(json_struct), public :: json_array
     private
-#ifdef INTEL_BUG20171115
-    type(array_element), pointer :: first => null()
-    type(array_element), pointer :: last => null()
-#else
     type(array_element), pointer :: first => null(), last => null()
-#endif
   contains
     procedure :: append => array_append_value
     procedure :: write => array_write
@@ -218,9 +210,6 @@ module json
 
   type, public :: json_array_iterator
     private
-#ifdef GNU_PR61767
-    integer, allocatable :: dummy
-#endif
     type(array_element), pointer :: element => null()
   contains
     procedure :: next => array_iter_next
@@ -642,11 +631,7 @@ contains
   integer function null_value (this) result (status)
     class(json_builder) :: this
     class(json_value), allocatable :: val
-#ifdef NO_2008_LHS_POLY_REALLOC
-    allocate(val, source=json_null())
-#else
     val = json_null()
-#endif
     status = store_value(this, val)
   end function null_value
 
@@ -654,11 +639,7 @@ contains
     class(json_builder) :: this
     integer(fyajl_integer_kind), intent(in) :: value
     class(json_value), allocatable :: val
-#ifdef NO_2008_LHS_POLY_REALLOC
-    allocate(val, source=json_integer(value))
-#else
     val = json_integer(value)
-#endif
     status = store_value(this, val)
   end function integer_value
 
@@ -666,11 +647,7 @@ contains
     class(json_builder) :: this
     real(fyajl_real_kind), intent(in) :: value
     class(json_value), allocatable :: val
-#ifdef NO_2008_LHS_POLY_REALLOC
-    allocate(val, source=json_real(value))
-#else
     val = json_real(value)
-#endif
     status = store_value(this, val)
   end function double_value
 
@@ -678,11 +655,7 @@ contains
     class(json_builder) :: this
     logical, intent(in) :: value
     class(json_value), allocatable :: val
-#ifdef NO_2008_LHS_POLY_REALLOC
-    allocate(val, source=json_boolean(value))
-#else
     val = json_boolean(value)
-#endif
     status = store_value(this, val)
   end function logical_value
 
@@ -690,17 +663,7 @@ contains
     class(json_builder) :: this
     character(*), intent(in) :: value
     class(json_value), allocatable :: val
-#ifdef NO_2008_LHS_POLY_REALLOC
-#ifdef FLANG_ISSUE720
-    type(json_string) :: tmp
-    tmp%value = value
-    allocate(val, source=tmp)
-#else
-    allocate(val, source=json_string(value))
-#endif
-#else
     val = json_string(value)
-#endif
     status = store_value(this, val)
   end function string_value
 
@@ -730,7 +693,7 @@ contains
 
   subroutine json_from_stream (unit, value, stat, errmsg, bufsize)
 
-    use,intrinsic :: iso_fortran_env, only: error_unit, iostat_end
+    use,intrinsic :: iso_fortran_env, only: iostat_end
     use,intrinsic :: iso_c_binding, only: c_char
 
     integer, intent(in) :: unit
@@ -764,9 +727,15 @@ contains
 
     inquire(unit,pos=last_pos)  ! starting position in stream
     do
-      read(unit,iostat=ios) buffer
+      do buflen = 1, size(buffer)
+        read(unit,iostat=ios) buffer(buflen)
+        if (ios /= 0) exit
+      end do
       if (ios /= 0 .and. ios /= iostat_end) then
-        write(error_unit,'(a,i0)') 'read error: iostat=', ios
+        allocate(character(16) :: errmsg)
+        write(errmsg,'(i0)') ios
+        errmsg = 'read error: iostat=' // trim(errmsg)
+        stat = -1
         exit
       end if
 

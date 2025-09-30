@@ -3,7 +3,7 @@ Building
 
 Prerequisites:
 
-* CMake version 3.1 or newer.
+* CMake version 3.20.2 or newer.
 
 * YAJL 2.0.1 or newer. You need both the library and the header files.
   This is a standard binary package in most any Linux distribution. Note
@@ -11,7 +11,7 @@ Prerequisites:
   can be downloaded from https://github.com/lloyd/yajl/releases if you must
   build the library yourself.
 
-* A Fortran compiler that supports the 2003/2008 features used by YAJL-Fort,
+* A Fortran compiler that supports the 2018 features used by YAJL-Fort,
   and its companion (or a compatible) C compiler.
 
 Clone the YAJL-Fort source repository with SSH::
@@ -48,25 +48,3 @@ Then compile the library and tests, and run the tests (all should pass)::
 
 Then see the documentation for the :ref:`yajl_fort <yajl_fort>` and
 :ref:`json <json-module>` modules and the examples therein.
-
-Compiler status and notes
--------------------------
-The following compilers are known to work:
-
-* NAG 5.3.2, 6.0, 6.1, and 6.2
-* Intel 16.0.2, 17.0.6, 18.0.1
-* GFortran 6.4.1, 7.2.1, 7.3.1, 8.1, 8.2
-* IBM xlf 15.1.6, 16.1.0 (must use the xlf2008 executable)
-
-The following compilers **appear** to work now. All tests are passing but
-the interface has not been extensively exercised in actual applications.
-
-* Flang March 2019 Binary Release (but no earlier)
-* PGI 19.4 (but no earlier)
-
-The ``CMakeLists.txt`` file has special stanzas for some compilers that set
-compiler flags and preprocessor macros that are known to be needed. If you
-are using another compiler it too may need specific compiler flags or macros
-defined.  These can be set on the ``cmake`` command line with
-``CMAKE_Fortran_FLAGS`` or a stanza can be added to the ``CMakeLists.txt``
-file.

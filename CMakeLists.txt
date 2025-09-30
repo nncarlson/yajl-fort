@@ -1,59 +1,42 @@
-cmake_minimum_required(VERSION 3.10)
+cmake_minimum_required(VERSION 3.20.2)
 
-project(YAJL-Fort C Fortran)
+project(YAJL-Fort Fortran C)
 
-set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake/")
 
 find_package(YAJL REQUIRED)
 if("${YAJL_VERSION}" VERSION_LESS "2.0.1")
   message(FATAL_ERROR "ERROR! version 2.0.1 or later of the yajl library is required")
 endif()
 
+# CMake build options
+option(BUILD_HTML "Build HTML documentation (requires Sphinx)" OFF)
+option(BUILD_SHARED_LIBS "Build shared object library" ON)
+option(ENABLE_STD_MOD_PROC_NAME "Build with -assume std_mod_proc_name when using Intel" OFF)
+
 if(NOT CMAKE_BUILD_TYPE)
-  set(CMAKE_BUILD_TYPE Release)
+  message(STATUS "Setting build type to 'Release' as none was specified")
+  set(CMAKE_BUILD_TYPE "Release" CACHE STRING "Choose the type of build" FORCE)
 endif()
 
-# NAG Fortran compiler flags
-if(CMAKE_Fortran_COMPILER_ID MATCHES NAG)
-  include(NAGFortranCompilerVersion)  # for older NAG versions
-  set(CMAKE_Fortran_FLAGS_RELEASE "-O3 -w=uda -DNDEBUG")
-  set(CMAKE_Fortran_FLAGS_DEBUG "-g -gline")
+# Set missing CMake defaults for the NAG Fortran compiler
+if(CMAKE_Fortran_COMPILER_ID STREQUAL NAG)
+  set(CMAKE_Fortran_FLAGS_DEBUG "-u -O0 -gline -C -nan")
+  set(CMAKE_Fortran_FLAGS_RELEASE "-u -O3")
+  set(CMAKE_Fortran_FLAGS_RELWITHDEBINFO "${CMAKE_Fortran_FLAGS_RELEASE} -g")
 endif()
 
-# Intel Fortran compiler flags
-if(CMAKE_Fortran_COMPILER_ID MATCHES Intel)
-  add_definitions(-DNO_2008_LHS_POLY_REALLOC)
-  if(CMAKE_Fortran_COMPILER_VERSION VERSION_LESS "17.0.0")
-    set(CMAKE_Fortran_FLAGS "-assume realloc_lhs")
-  endif()
-  if(CMAKE_Fortran_COMPILER_VERSION VERSION_GREATER "18.0.0")
-    add_definitions(-DINTEL_BUG20171115)
-  endif()
-endif()
+# Disable assertions in release builds
+add_compile_definitions($<$<CONFIG:Release,RelWithDebInfo>:NDEBUG>)
 
-# GFortran compiler flags
-if(CMAKE_Fortran_COMPILER_ID MATCHES GNU)
-  set(CMAKE_Fortran_FLAGS "-ffree-line-length-none")
-  add_definitions(-DGNU_PR61767)
-  add_definitions(-DNO_2008_LHS_POLY_REALLOC)
-endif()
-
-# PGI Fortran compiler flags
-if(CMAKE_Fortran_COMPILER_ID MATCHES PGI)
-  add_definitions(-DNO_2008_LHS_POLY_REALLOC)
-  add_definitions(-DFLANG_ISSUE720)
-  add_definitions(-DFLANG_ISSUE721)
-endif()
-
-# Flang compiler flags
-if(CMAKE_Fortran_COMPILER_ID MATCHES Flang)
-  add_definitions(-DNO_2008_LHS_POLY_REALLOC)
-  add_definitions(-DFLANG_ISSUE720)
-  add_definitions(-DFLANG_ISSUE721)
-endif()
+# Required compiler options
+add_compile_options($<$<COMPILE_LANG_AND_ID:Fortran,NAG>:-f2018>)
+add_compile_options($<$<COMPILE_LANG_AND_ID:Fortran,GNU>:-ffree-line-length-none>)
+add_compile_options("$<$<COMPILE_LANG_AND_ID:Fortran,Intel,IntelLLVM>:-standard-semantics>"
+  "$<$<AND:$<NOT:$<BOOL:${ENABLE_STD_MOD_PROC_NAME}>>,$<COMPILE_LANG_AND_ID:Fortran,Intel,IntelLLVM>>:SHELL:-assume nostd_mod_proc_name>")
 
 # RPATH handling for installed shared libraries and dynamically-linked
-# executables.  See http://www.cmake.org/Wiki/CMake_RPATH_handling
+# executables. See http://www.cmake.org/Wiki/CMake_RPATH_handling
 set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
